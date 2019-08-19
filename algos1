@@ -1,0 +1,169 @@
+#include<iostream>
+#include<vector>
+#include<limits.h>
+#include<string>
+#include<list>
+
+
+
+class Graph
+{
+	int vertices;
+	std::list<int>* adjlist;
+	int* visited;
+public:
+	Graph(int v);
+	void addEdge(int src, int dest);
+	void displaylist();
+	void bfs(int sv);
+	void dfs(int sv);
+	void tps(int sv);
+	
+
+
+};
+
+Graph::Graph(int v)
+{
+	vertices = v;
+	adjlist = new std::list<int>[v];
+	visited = new int[v] {0};
+	
+}
+
+void Graph::addEdge(int src, int dest)
+{
+	adjlist[src].push_back(dest);
+	
+}
+
+void Graph::displaylist()
+{
+	for (int i = 0; i < vertices; i++)
+	{
+		std::cout << i << " :";
+		for (auto k : adjlist[i])
+		{
+			std::cout << " -->" << k;
+		}
+		std::cout << std::endl;
+
+	}
+}
+
+void Graph::bfs(int sv)
+{
+	
+	visited[sv] = 1;
+	int current;// stores the dequeued node.
+
+	std::list<int> queue;
+	queue.push_front(sv);
+
+	while (!queue.empty())
+	{
+		current = queue.front();
+		visited[current] = 1;
+		queue.pop_front();
+		std::cout << current << " ";
+		for (auto i : adjlist[current])
+		{
+			if (visited[i] != 1)
+			{
+				queue.push_back(i);
+				visited[i] = 1;
+			}
+		}
+	}
+
+	delete[] visited;
+
+}
+
+void Graph::dfs(int sv)
+{	
+	visited[sv] = 1;
+	std::cout << sv << " ";
+	for (auto x : adjlist[sv])
+	{
+		if (visited[x] == 0)
+		{
+			visited[x] = 1;
+			dfs(x);
+		}
+	}
+}
+
+void Graph::tps(int sv)
+{
+
+	int* start = new int[vertices] {0};
+
+
+	std::list<int> tps;
+	std::list<int> stack;
+	stack.push_front(sv);
+	start[sv] = 1;
+	std::cout << sv << " ";
+	int current;
+	int t = 1; // traversal index.
+
+	for (int i = 0; i < vertices; i++)
+	{
+		if (start[i] == 0 && stack.empty())
+		{
+			stack.push_front(i);
+			start[i] = ++t;
+		}
+
+		int temp;
+		while (!stack.empty())
+		{
+			current = stack.front();
+
+
+			bool flag = true;
+			for (auto x : adjlist[current])
+			{
+				if (start[x] == 0)
+				{
+					flag = false;
+					std::cout << x << " ";
+					start[x] = ++t;
+					stack.push_front(x);
+				}
+			}
+
+			if (flag)
+			{
+				tps.push_front(stack.front());
+				stack.pop_front();
+
+			}
+
+		}
+		//
+	}
+
+	std::cout << "\n";
+	for (auto x : tps)
+	{
+		std::cout << x << " ";
+	}
+}
+int main()
+{
+	Graph g(4);
+	g.addEdge(0, 1);
+	g.addEdge(0, 2);
+	g.addEdge(1, 2);
+	g.addEdge(2, 0);
+	g.addEdge(2, 3);
+	g.addEdge(3, 3);
+
+	//g.displaylist();
+	g.dfs(2);
+	
+
+	return 0;
+}
